@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 
 import static org.launchcode.techjobs.mvc.controllers.ListController.columnChoices;
-
+import static org.launchcode.techjobs.mvc.models.JobData.findAll;
+import static org.launchcode.techjobs.mvc.models.JobData.findByColumnAndValue;
 
 /**
  * Created by LaunchCode
@@ -31,17 +32,16 @@ public class SearchController {
 
     @PostMapping(value = "results")
     public String displaySearchResults(Model model, @RequestParam String searchType, @RequestParam String searchTerm) {
-//      Create new ArrayList for Jobs
-//      will need model attributes
-        ArrayList<Job> jobs = new ArrayList<>();
-        model.addAttribute("jobs", jobs);
-        model.addAttribute("columns", columnChoices);
-
+        ArrayList<Job> jobs;
         if (searchTerm.equals("all") || searchTerm.equals("")) {
             jobs = JobData.findAll();
+            model.addAttribute("title", "All Jobs");
         } else {
             jobs = JobData.findByColumnAndValue(searchType, searchTerm);
+            model.addAttribute("title", "Jobs with " + columnChoices.get(searchType) + ": " + searchTerm);
         }
+        model.addAttribute("jobs", jobs);
+        model.addAttribute("columns", columnChoices);
         return "search";
     }
 
